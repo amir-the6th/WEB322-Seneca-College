@@ -27,12 +27,12 @@ app.get('/about', function (req, res) {
 
 //// setup a 'route' to listen on /employees
 app.get('/employees', function (req, res) {
-  res.send('<h3>Employees</h3>');
+  res.sendFile(path.join(__dirname, '/views/about.html'));
 });
 
 //// setup a 'route' to listen on /managers
 app.get('/managers', function (req, res) {
-  res.send('<h3>Managers</h3>');
+  res.json({ isManager: 'true' });
 });
 
 //// setup a 'route' to listen on /departments
