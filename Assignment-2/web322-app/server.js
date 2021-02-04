@@ -47,7 +47,6 @@ app.get('/departments', function (req, res) {
 });
 
 //// setup a 'route' for no matching route
-
 //////// Traditional way:
 // app.use(function (req, res) {
 //   res.status(404).send('Page Not Found');
