@@ -1,7 +1,7 @@
 var express = require('express');
-var app = express();
 var path = require('path');
 var dataService = require('./data-service.js');
+var app = express();
 
 var HTTP_PORT = process.env.PORT || 8080;
 
@@ -27,18 +27,42 @@ app.get('/about', function (req, res) {
 
 //// setup a 'route' to listen on /employees
 app.get('/employees', function (req, res) {
-  res.sendFile(path.join(__dirname, '/views/about.html'));
+  dataService.getAllEmployees().then((data) => {
+    res.json(data);
+  });
 });
 
 //// setup a 'route' to listen on /managers
 app.get('/managers', function (req, res) {
-  res.json({ isManager: 'true' });
+  dataService.getManagers().then((data) => {
+    res.json(data);
+  });
 });
 
 //// setup a 'route' to listen on /departments
 app.get('/departments', function (req, res) {
-  res.send('<h3>Departments</h3>');
+  dataService.getDepartments().then((data) => {
+    res.json(data);
+  });
 });
 
-// setup http server to listen on HTTP_PORT
-app.listen(HTTP_PORT, onHTTPStart);
+//// setup a 'route' for no matching route
+
+//////// Traditional way:
+// app.use(function (req, res) {
+//   res.status(404).send('Page Not Found');
+// });
+//////// Modern way:
+app.use(function (req, res) {
+  res.sendFile(path.join(__dirname, '/views/404.html'));
+});
+
+//// setup http server to listen on HTTP_PORT
+dataService
+  .initialize()
+  .then(function () {
+    app.listen(HTTP_PORT, onHTTPStart);
+  })
+  .catch(function (err) {
+    console.log('Failed to start!' + err);
+  });
