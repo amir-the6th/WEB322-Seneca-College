@@ -1,3 +1,17 @@
+/*********************************************************************************
+ *  WEB322 – Assignment 02
+ *  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.
+ *  No part *  of this assignment has been copied manually or electronically from any other source
+ *  (including 3rd party web sites) or distributed to other students.
+ *
+ *  Name: Amirhossein Sabagh
+ *  Student ID: 152956199
+ *  Date: 2021-02-05
+ *
+ *  Online (Heroku) Link:  https://frozen-meadow-35295.herokuapp.com
+ *
+ ********************************************************************************/
+
 var express = require('express');
 var path = require('path');
 var dataService = require('./data-service.js');
