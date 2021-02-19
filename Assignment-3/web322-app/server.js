@@ -84,7 +84,13 @@ app.get('/departments', function (req, res) {
 });
 
 app.post('/images/add', upload.single('photo'), (req, res) => {
-  res.send('register');
+  res.redirect('/images');
+});
+
+app.get('/images', function (req, res) {
+  fs.readdir('./public/images/uploaded', function (err, items) {
+    res.json({ images: items });
+  });
 });
 
 //// setup a 'route' for no matching route
