@@ -16,6 +16,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const multer = require('multer');
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const dataService = require('./data-service.js');
 
@@ -36,6 +37,8 @@ const storage = multer.diskStorage({
 
 // tell multer to use the diskStorage function for naming files instead of the default.
 const upload = multer({ storage: storage });
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 //for your server to correctly return the "css/site.css" file, the "static" middleware must be used
 // setup the static folder that static resources can load from
@@ -64,9 +67,54 @@ app.get('/images/add', function (req, res) {
 
 //// setup a 'route' to listen on /employees
 app.get('/employees', function (req, res) {
-  dataService.getAllEmployees().then((data) => {
-    res.json(data);
-  });
+  if (req.query.status) {
+    dataService
+      .getEmployeesByStatus(req.query.status)
+      .then((data) => {
+        res.json(data);
+      })
+      .catch(function (err) {
+        res.json({ message: err });
+      });
+  } else if (req.query.department) {
+    dataService
+      .getEmployeesByDepartment(req.query.department)
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((err) => {
+        res.json({ message: err });
+      });
+  } else if (req.query.manager) {
+    dataService
+      .getEmployeesByManager(req.query.manager)
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((err) => {
+        res.json({ message: err });
+      });
+  } else {
+    dataService
+      .getAllEmployees()
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((err) => {
+        res.json({ message: err });
+      });
+  }
+});
+
+app.get('/employee/:value', (req, res) => {
+  dataService
+    .getEmployeeByNum(req.params.value)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json({ err });
+    });
 });
 
 //// setup a 'route' to listen on /managers
@@ -83,14 +131,23 @@ app.get('/departments', function (req, res) {
   });
 });
 
-app.post('/images/add', upload.single('photo'), (req, res) => {
+app.get('/images', function (req, res) {
+  fs.readdir('./public/images/uploaded', (err, items) => {
+    res.json({ images: items });
+  });
+});
+
+app.post('/images/add', upload.single('imageFile'), (req, res) => {
   res.redirect('/images');
 });
 
-app.get('/images', function (req, res) {
-  fs.readdir('./public/images/uploaded', function (err, items) {
-    res.json({ images: items });
-  });
+app.post('/employees/add', (req, res) => {
+  dataService
+    .addEmployee(req.body)
+    .then(res.redirect('/employees'))
+    .catch(function (err) {
+      res.json({ message: err });
+    });
 });
 
 //// setup a 'route' for no matching route
