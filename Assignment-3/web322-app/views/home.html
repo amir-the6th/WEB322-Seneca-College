@@ -11,6 +11,7 @@
       integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
       crossorigin="anonymous"
     />
+
     <link rel="stylesheet" href="css/site.css" type="text/css" />
     <title>Home</title>
   </head>
@@ -43,14 +44,17 @@
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
+        <div
+          class="collapse navbar-collapse navbar-custom"
+          id="bs-example-navbar-collapse-1"
+        >
+          <ul class="nav navbar-nav navbar-custom">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="/about">About</a></li>
             <li><a href="/employees/add">Add Employee</a></li>
             <li><a href="/images/add">Add Image</a></li>
           </ul>
-          <ul class="nav navbar-nav navbar-right">
+          <ul class="nav navbar-nav navbar-right navbar-custom">
             <li><a href="/images">Images</a></li>
             <li><a href="/employees">Employees</a></li>
             <li><a href="/managers">Managers</a></li>
@@ -61,6 +65,7 @@
       </div>
       <!-- /.container-fluid -->
     </nav>
+    <div class="header-cover p-5 text-center bg-image"></div>
     <div class="container">
       <div class="row">
         <aside class="col-md-3">
@@ -70,6 +75,8 @@
             newsletter to get informed of the day we are going to rock the
             world. <br />Keep Safe!
           </p>
+          <p id="countdown"></p>
+          <div data-role="countdown" data-hours="90"></div>
         </aside>
         <section class="main col-md-9">
           <article>
@@ -134,6 +141,51 @@
         </section>
       </div>
     </div>
+    <footer class="footer">
+      <div class="container bottom_border">
+        <div class="row">
+          <div class="col-sm-8 col-md col-sm-8 col-12 col">
+            <h5 class="headin5_amrc col_white_amrc pt2">Coming Soon</h5>
+            <!--headin5_amrc-->
+            <p class="mb10">
+              Stay tuned. We'll be online in less than a month. Subscribe to our
+              newsletter to get informed of the day we are going to rock the
+              world. Keep Safe! Duis egestas cursus diam, ut volutpat tortor
+              mattis tempor. In et imperdiet turpis. Proin aliquet, lectus
+              ultrices fringilla lobortis, purus risus imperdiet neque, eget
+              consectetur ligula quam non arcu. Curabitur vitae posuere elit, in
+              faucibus felis.
+            </p>
+            <p><i class="fa fa-location-arrow"></i> 9878/25 sec 9 rohini 35</p>
+            <p><i class="fa fa-phone"></i> +91-9999878398</p>
+            <p><i class="fa fa fa-envelope"></i> info@example.com</p>
+          </div>
+
+          <div class="col-sm-4 col-md col-6 col">
+            <h5 class="headin5_amrc col_white_amrc pt2">Quick links</h5>
+            <!--headin5_amrc-->
+            <ul class="footer_ul_amrc">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/employees/add">Add Employee</a></li>
+              <li><a href="/images/add">Add Image</a></li>
+              <li><a href="/images">Images</a></li>
+              <li><a href="/employees">Employees</a></li>
+              <li><a href="/managers">Managers</a></li>
+              <li><a href="/departments">Departments</a></li>
+            </ul>
+            <!--footer_ul_amrc ends here-->
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <p class="text-center foote_bottom_ul_amrc">
+          &#169; Copyright 2021 | Designed With &#10084; by
+          <b>Amirhossein Sabagh</b>
+        </p>
+      </div>
+    </footer>
 
     <!-- Latest compiled and minified jQuery 3.2.1 JavaScript -->
     <script
@@ -148,5 +200,6 @@
       integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
       crossorigin="anonymous"
     ></script>
+    <script src="../index.js"></script>
   </body>
 </html>
