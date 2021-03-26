@@ -82,7 +82,7 @@ module.exports = {
 
   getAllEmployees: function () {
     return new Promise((resolve, reject) => {
-      Employee.findAll({})
+      Employee.findAll({ raw: true })
         .then((data) => {
           if (data.length > 0) {
             resolve(data);
@@ -100,6 +100,7 @@ module.exports = {
         where: {
           isManager: true,
         },
+        raw: true,
       })
         .then((data) => {
           if (data.length > 0) {
@@ -116,7 +117,7 @@ module.exports = {
 
   getDepartments: function () {
     return new Promise((resolve, reject) => {
-      Department.findAll({})
+      Department.findAll({ raw: true })
         .then(function (data) {
           if (data.length > 0) {
             resolve(data);
@@ -134,6 +135,7 @@ module.exports = {
         where: {
           status: e_status,
         },
+        raw: true,
       })
         .then((data) => {
           if (data.length > 0) {
@@ -152,6 +154,7 @@ module.exports = {
         where: {
           department: e_department,
         },
+        raw: true,
       })
         .then((data) => {
           if (data.length > 0) {
@@ -170,6 +173,7 @@ module.exports = {
         where: {
           employeeManagerNum: manager,
         },
+        raw: true,
       })
         .then((data) => {
           if (data.length > 0) {
@@ -188,6 +192,7 @@ module.exports = {
         where: {
           employeeNum: num,
         },
+        raw: true,
       })
         .then((data) => {
           if (data.length > 0) {
@@ -206,6 +211,7 @@ module.exports = {
         where: {
           departmentName: id,
         },
+        raw: true,
       })
         .then((data) => {
           if (data.length > 0) {
@@ -340,6 +346,20 @@ module.exports = {
         })
         .catch(() => {
           reject('Unable to delete the department!');
+        });
+    });
+  },
+
+  deleteEmployeeByNum: function (empNum) {
+    return new Promise((resolve, reject) => {
+      Employee.destroy({
+        where: { employeeNum: empNum },
+      })
+        .then(() => {
+          resolve('Employee has been deleted!');
+        })
+        .catch(() => {
+          reject('Unable to delete the employee!');
         });
     });
   },

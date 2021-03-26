@@ -1,14 +1,14 @@
 /*********************************************************************************
- *  WEB322 – Assignment 04
+ *  WEB322 – Assignment 05
  *  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.
  *  No part *  of this assignment has been copied manually or electronically from any other source
  *  (including 3rd party web sites) or distributed to other students.
  *
  *  Name: Amirhossein Sabagh
  *  Student ID: 152956199
- *  Date: 2021-03-12
+ *  Date: 2021-03-26
  *
- *  Online (Heroku) Link: https://enigmatic-gorge-15844.herokuapp.com
+ *  Online (Heroku) Link:
  *
  ********************************************************************************/
 
@@ -153,22 +153,67 @@ app.get('/employees', (req, res) => {
   }
 });
 
-app.get('/employee/:value', (req, res) => {
+app.get('/employee/:empNum', (req, res) => {
+  // initialize an empty object to store the values
+  let viewData = {};
+
   dataService
-    .getEmployeeByNum(req.params.value)
+    .getEmployeeByNum(req.params.empNum)
     .then((data) => {
-      res.render('employee', { employee: data[0] });
+      if (data) {
+        viewData.employee = data; //store employee data in the "viewData" object as "employee"
+      } else {
+        viewData.employee = null; // set employee to null if none were returned
+      }
     })
-    .catch((err) => {
-      res.render('employee', { message: err });
+    .catch(() => {
+      viewData.employee = null; // set employee to null if there was an error
+    })
+    .then(dataService.getDepartments)
+    .then((data) => {
+      viewData.departments = data; // store department data in the "viewData" object as "departments"
+
+      // loop through viewData.departments and once we have found the departmentId that matches
+      // the employee's "department" value, add a "selected" property to the matching
+      // viewData.departments object
+
+      for (let i = 0; i < viewData.departments.length; i++) {
+        if (
+          viewData.departments[i].departmentId == viewData.employee.department
+        ) {
+          viewData.departments[i].selected = true;
+        }
+      }
+    })
+    .catch(() => {
+      viewData.departments = []; // set departments to empty if there was an error
+    })
+    .then(() => {
+      if (viewData.employee == null) {
+        // if no employee - return an error
+        res.status(404).send('Employee Not Found');
+      } else {
+        res.render('employee', { viewData: viewData }); // render the "employee" view
+      }
+    });
+});
+
+app.get('/employees/delete/:empNum', (req, res) => {
+  dataService
+    .deleteEmployeeByNum(req.params.empNum)
+    .then(() => res.redirect('/employees'))
+    .catch(() => {
+      res.status(500).render('employee', {
+        message: '500: Unable to Remove Employee / Employee not found',
+      });
     });
 });
 
 app.get('/department/:departmentId', (req, res) => {
   dataService
     .getDepartmentById(req.params.departmentId)
-    .then((departmentId) => {
-      res.render('department', { department: departmentId });
+    .then((value) => {
+      res.render('department', { department: value });
     })
     .catch((err) => {
       res
