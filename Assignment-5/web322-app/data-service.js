@@ -209,7 +209,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       Department.findAll({
         where: {
-          departmentName: id,
+          departmentId: id,
         },
         raw: true,
       })
