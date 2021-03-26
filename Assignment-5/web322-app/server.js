@@ -36,7 +36,7 @@ app.engine(
     defaultLayout: 'main',
     helpers: {
       //fixing the navbar 'active' issue
-      navLink: function (url, options) {
+      navLink: (url, options) => {
         return (
           '<li' +
           (url == app.locals.activeRoute ? ' class="active" ' : '') +
@@ -47,7 +47,7 @@ app.engine(
           '</a></li>'
         );
       },
-      equal: function (lvalue, rvalue, options) {
+      equal: (lvalue, rvalue, options) => {
         if (arguments.length < 3)
           throw new Error('Handlebars Helper equal needs 2 parameters');
         if (lvalue != rvalue) {
@@ -64,7 +64,7 @@ app.set('view engine', '.hbs');
 //the middleware to support image uploads
 const storage = multer.diskStorage({
   destination: './public/images/uploaded',
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
@@ -74,7 +74,7 @@ const upload = multer({ storage: storage });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   let route = req.baseUrl + req.path;
   app.locals.activeRoute = route == '/' ? '/' : route.replace(/\/$/, '');
   next();
@@ -86,38 +86,38 @@ app.use(function (req, res, next) {
 app.use(express.static('public'));
 
 //// setup a 'route' to listen on /home
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   // res.sendFile(path.join(__dirname, '/views/home.html'));
   res.render('home');
 });
 
 //// setup a 'route' to listen on /about
-app.get('/about', function (req, res) {
+app.get('/about', (req, res) => {
   // res.sendFile(path.join(__dirname, '/views/about.html'));
   res.render('about');
 });
 
 //// setup a 'route' to listen on /employees/add
-app.get('/employees/add', function (req, res) {
+app.get('/employees/add', (req, res) => {
   // res.sendFile(path.join(__dirname, '/views/addEmployee.html'));
   res.render('addEmployee');
 });
 
 //// setup a 'route' to listen on /images/add
-app.get('/images/add', function (req, res) {
+app.get('/images/add', (req, res) => {
   // res.sendFile(path.join(__dirname, '/views/addImage.html'));
   res.render('addImage');
 });
 
 //// setup a 'route' to listen on /employees
-app.get('/employees', function (req, res) {
+app.get('/employees', (req, res) => {
   if (req.query.status) {
     dataService
       .getEmployeesByStatus(req.query.status)
       .then((data) => {
         res.render('employees', { employees: data });
       })
-      .catch(function (err) {
+      .catch((err) => {
         res.render('employees', { message: err });
       });
   } else if (req.query.department) {
@@ -162,20 +162,30 @@ app.get('/employee/:value', (req, res) => {
 });
 
 //// setup a 'route' to listen on /managers
-app.get('/managers', function (req, res) {
-  dataService.getManagers().then((data) => {
-    res.render('managers', { managers: data });
-  });
+app.get('/managers', (req, res) => {
+  dataService
+    .getManagers()
+    .then((data) => {
+      res.render('managers', { managers: data });
+    })
+    .catch((err) => {
+      res.render('managers', { message: err });
+    });
 });
 
 //// setup a 'route' to listen on /departments
-app.get('/departments', function (req, res) {
-  dataService.getDepartments().then((data) => {
-    res.render('departments', { departments: data });
-  });
+app.get('/departments', (req, res) => {
+  dataService
+    .getDepartments()
+    .then((data) => {
+      res.render('departments', { departments: data });
+    })
+    .catch((err) => {
+      res.render('departments', { message: err });
+    });
 });
 
-app.get('/images', function (req, res) {
+app.get('/images', (req, res) => {
   fs.readdir('./public/images/uploaded', (err, items) => {
     res.render('images', { image: items });
   });
@@ -189,7 +199,7 @@ app.post('/employees/add', (req, res) => {
   dataService
     .addEmployee(req.body)
     .then(res.redirect('/employees'))
-    .catch(function (err) {
+    .catch((err) => {
       res.render({ message: err });
     });
 });
@@ -198,7 +208,20 @@ app.post('/employee/update', (req, res) => {
   dataService
     .updateEmployee(req.body)
     .then(res.redirect('/employees'))
-    .catch(function (err) {
+    .catch((err) => {
+      res.render({ message: err });
+    });
+});
+
+app.get('/departments/add', function (req, res) {
+  res.render('addDepartment');
+});
+
+app.post('/departments/add', (req, res) => {
+  dataService
+    .addDepartment(req.body)
+    .then(res.redirect('/departments'))
+    .catch((err) => {
       res.render({ message: err });
     });
 });
