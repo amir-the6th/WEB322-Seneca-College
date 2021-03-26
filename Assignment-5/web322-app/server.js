@@ -100,7 +100,10 @@ app.get('/about', (req, res) => {
 //// setup a 'route' to listen on /employees/add
 app.get('/employees/add', (req, res) => {
   // res.sendFile(path.join(__dirname, '/views/addEmployee.html'));
-  res.render('addEmployee');
+  dataService
+    .getDepartments()
+    .then((value) => res.render('addEmployee', { departments: value }))
+    .catch(() => res.render('addEmployee', { departments: [] }));
 });
 
 //// setup a 'route' to listen on /images/add
@@ -161,6 +164,30 @@ app.get('/employee/:value', (req, res) => {
     });
 });
 
+app.get('/department/:departmentId', (req, res) => {
+  dataService
+    .getDepartmentById(req.params.departmentId)
+    .then((departmentId) => {
+      res.render('department', { department: departmentId });
+    })
+    .catch((err) => {
+      res
+        .status(404)
+        .render('department', { message: '404: Department Not Found' });
+    });
+});
+
+app.get('/departments/delete/:departmentId', (req, res) => {
+  dataService
+    .deleteDepartmentById(req.params.departmentId)
+    .then(res.redirect('/departments'))
+    .catch((err) => {
+      res.status(500).render('department', {
+        message: 'Unable to Remove Department / Department not found)',
+      });
+    });
+});
+
 //// setup a 'route' to listen on /managers
 app.get('/managers', (req, res) => {
   dataService
@@ -185,6 +212,10 @@ app.get('/departments', (req, res) => {
     });
 });
 
+app.get('/departments/add', function (req, res) {
+  res.render('addDepartment');
+});
+
 app.get('/images', (req, res) => {
   fs.readdir('./public/images/uploaded', (err, items) => {
     res.render('images', { image: items });
@@ -200,7 +231,9 @@ app.post('/employees/add', (req, res) => {
     .addEmployee(req.body)
     .then(res.redirect('/employees'))
     .catch((err) => {
-      res.render({ message: err });
+      res
+        .status(500)
+        .render('employee', { message: '500: Unable to add the employee' });
     });
 });
 
@@ -209,12 +242,10 @@ app.post('/employee/update', (req, res) => {
     .updateEmployee(req.body)
     .then(res.redirect('/employees'))
     .catch((err) => {
-      res.render({ message: err });
+      res
+        .status(500)
+        .render('employee', { message: '500: Unable to update the employee' });
     });
-});
-
-app.get('/departments/add', function (req, res) {
-  res.render('addDepartment');
 });
 
 app.post('/departments/add', (req, res) => {
@@ -222,7 +253,20 @@ app.post('/departments/add', (req, res) => {
     .addDepartment(req.body)
     .then(res.redirect('/departments'))
     .catch((err) => {
-      res.render({ message: err });
+      res.status(500).render('departments', {
+        message: '500: Unable to add the department',
+      });
+    });
+});
+
+app.post('/department/update', (req, res) => {
+  dataService
+    .updateDepartment(req.body)
+    .then(res.redirect('/departments'))
+    .catch((err) => {
+      res.status(500).render('departments', {
+        message: '500: Unable to update the department',
+      });
     });
 });
 
