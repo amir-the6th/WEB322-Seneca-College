@@ -363,4 +363,89 @@ module.exports = {
         });
     });
   },
+
+  //////////////////////////////////////////////////////////////////////////////
+  /////////////// Extra Feature: add, update, and delete a manager ////////////
+  addManager: function (employeeData) {
+    employeeData.isManager = employeeData.isManager ? true : false;
+    for (let field in employeeData) {
+      if (employeeData[field] == '') employeeData[field] = null;
+    }
+
+    return new Promise((resolve, reject) => {
+      Employee.create({
+        firstName: employeeData.firstName,
+        lastName: employeeData.lastName,
+        email: employeeData.email,
+        SSN: employeeData.SSN,
+        addressStreet: employeeData.addressStreet,
+        addressCity: employeeData.addressCity,
+        addressState: employeeData.addressState,
+        addressPostal: employeeData.addressPostal,
+        isManager: true,
+        employeeManagerNum: employeeData.employeeManagerNum,
+        status: employeeData.status,
+        hireDate: employeeData.hireDate,
+        department: employeeData.department,
+      })
+        .then(() => {
+          resolve('New manager added!');
+        })
+        .catch(() => {
+          reject('Unable to add the new manager!');
+        });
+    });
+  },
+
+  updateManager: function (employeeData) {
+    employeeData.isManager = employeeData.isManager ? true : false;
+    for (let field in employeeData) {
+      if (employeeData[field] == '') employeeData[field] = null;
+    }
+
+    return new Promise((resolve, reject) => {
+      Employee.update(
+        {
+          firstName: employeeData.firstName,
+          lastName: employeeData.lastName,
+          email: employeeData.email,
+          SSN: employeeData.SSN,
+          addressStreet: employeeData.addressStreet,
+          addressCity: employeeData.addressCity,
+          addressState: employeeData.addressState,
+          addressPostal: employeeData.addressPostal,
+          isManager: true,
+          employeeManagerNum: employeeData.employeeManagerNum,
+          status: employeeData.status,
+          hireDate: employeeData.hireDate,
+          department: employeeData.department,
+        },
+        {
+          where: {
+            employeeNum: employeeData.employeeNum,
+          },
+        }
+      )
+        .then(() => {
+          resolve('Manager information has been updated!');
+        })
+        .catch(() => {
+          reject('Unable to update the manager information!');
+        });
+    });
+  },
+
+  deleteManagerByNum: function (empNum) {
+    return new Promise((resolve, reject) => {
+      Employee.destroy({
+        where: { employeeNum: empNum },
+      })
+        .then(() => {
+          resolve('Manager has been deleted!');
+        })
+        .catch(() => {
+          reject('Unable to delete the manager!');
+        });
+    });
+  },
 }; //end of module.exports

@@ -315,6 +315,46 @@ app.post('/department/update', (req, res) => {
     });
 });
 
+//////////////////////////////////////////////////////////////////////////////
+/////// Extra Feature: Middleware to add, update, and delete a manager ///////
+app.get('/managers/add', function (req, res) {
+  res.render('addManager');
+});
+
+app.post('/managers/add', (req, res) => {
+  dataService
+    .addManager(req.body)
+    .then(res.redirect('/managers'))
+    .catch((err) => {
+      res.status(500).render('managers', {
+        message: '500: Unable to add the manager',
+      });
+    });
+});
+
+app.post('/manager/update', (req, res) => {
+  dataService
+    .updateManager(req.body)
+    .then(res.redirect('/manager'))
+    .catch((err) => {
+      res.status(500).render('managers', {
+        message: '500: Unable to update the manager',
+      });
+    });
+});
+
+app.get('/managers/delete/:empNum', (req, res) => {
+  dataService
+    .deleteManagerByNum(req.params.empNum)
+    .then(() => res.redirect('/managers'))
+    .catch(() => {
+      res.status(500).render('managers', {
+        message: '500: Unable to Remove Manager / Manager not found',
+      });
+    });
+});
+//////////////////////////////////////////////////////////////////////////////
+
 //// setup a 'route' for no matching route
 //////// Traditional way:
 // app.use(function (req, res) {
