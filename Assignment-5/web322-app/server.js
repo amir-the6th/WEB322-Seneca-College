@@ -335,7 +335,7 @@ app.post('/managers/add', (req, res) => {
 app.post('/manager/update', (req, res) => {
   dataService
     .updateManager(req.body)
-    .then(res.redirect('/manager'))
+    .then(res.redirect('/managers'))
     .catch((err) => {
       res.status(500).render('managers', {
         message: '500: Unable to update the manager',

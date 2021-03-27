@@ -4,7 +4,7 @@
 
         <br />
 
-        <form method="post" action="/employees/add">
+        <form method="post" action="/managers/add">
             <fieldset>
                 <legend>Personal Information</legend>
                 <div class="row">
@@ -67,7 +67,8 @@
                     {{!-- <div class="col-md-3"> --}}
                         {{!-- <div class="form-group"> --}}
                             <!--<label for="isManager">Manager:</label>-->
-                            <input class="form-control" type="hidden" name="isManager" checked readonly />
+                            <input class="form-control" type="hidden" id="employeeManagerNum" name="isManager"
+                                value="true" checked />
                             {{!--
                         </div>
                     </div> --}}
