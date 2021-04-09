@@ -20,6 +20,7 @@ const multer = require('multer');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const dataService = require('./data-service.js');
+const dataServiceAuth = require('./data-service-auth.js');
 
 const HTTP_PORT = process.env.PORT || 8080;
 
