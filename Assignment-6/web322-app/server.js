@@ -438,7 +438,7 @@ app.use(function (req, res) {
   res.sendFile(path.join(__dirname, '/views/404.html'));
 });
 
-//// setup http server to listen on HTTP_PORT
+// setup http server to listen on HTTP_PORT
 dataService
   .initialize()
   .then(dataServiceAuth.initialize)
