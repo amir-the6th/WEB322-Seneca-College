@@ -19,6 +19,7 @@ const path = require('path');
 const multer = require('multer');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+var clientSessions = require('client-sessions');
 const dataService = require('./data-service.js');
 const dataServiceAuth = require('./data-service-auth.js');
 
@@ -27,6 +28,29 @@ const HTTP_PORT = process.env.PORT || 8080;
 // call this function after the http server starts listening for requests
 function onHTTPStart() {
   console.log('Express http server listening on: ' + HTTP_PORT);
+}
+
+// Setup client-sessions
+app.use(
+  clientSessions({
+    cookieName: 'session', // this is the object name that will be added to 'req'
+    secret: 'ass6-web322-&-AmirHasDefinedALongUnGuessableString', // this should be a long un-guessable string.
+    duration: 2 * 60 * 1000, // duration of the session in milliseconds (2 minutes)
+    activeDuration: 1000 * 60, // the session will be extended by this many ms each request (1 minute)
+  })
+);
+
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  next();
+});
+
+function ensureLogin(req, res, next) {
+  if (!req.session.user) {
+    res.redirect('/login');
+  } else {
+    next();
+  }
 }
 
 // set up engine for handlebars
@@ -99,7 +123,7 @@ app.get('/about', (req, res) => {
 });
 
 //// setup a 'route' to listen on /employees/add
-app.get('/employees/add', (req, res) => {
+app.get('/employees/add', ensureLogin, (req, res) => {
   // res.sendFile(path.join(__dirname, '/views/addEmployee.html'));
   dataService
     .getDepartments()
@@ -108,13 +132,13 @@ app.get('/employees/add', (req, res) => {
 });
 
 //// setup a 'route' to listen on /images/add
-app.get('/images/add', (req, res) => {
+app.get('/images/add', ensureLogin, (req, res) => {
   // res.sendFile(path.join(__dirname, '/views/addImage.html'));
   res.render('addImage');
 });
 
 //// setup a 'route' to listen on /employees
-app.get('/employees', (req, res) => {
+app.get('/employees', ensureLogin, (req, res) => {
   if (req.query.status) {
     dataService
       .getEmployeesByStatus(req.query.status)
@@ -154,7 +178,7 @@ app.get('/employees', (req, res) => {
   }
 });
 
-app.get('/employee/:empNum', (req, res) => {
+app.get('/employee/:empNum', ensureLogin, (req, res) => {
   // initialize an empty object to store the values
   let viewData = {};
 
@@ -199,7 +223,7 @@ app.get('/employee/:empNum', (req, res) => {
     });
 });
 
-app.get('/employees/delete/:empNum', (req, res) => {
+app.get('/employees/delete/:empNum', ensureLogin, (req, res) => {
   dataService
     .deleteEmployeeByNum(req.params.empNum)
     .then(() => res.redirect('/employees'))
@@ -210,7 +234,7 @@ app.get('/employees/delete/:empNum', (req, res) => {
     });
 });
 
-app.get('/department/:departmentId', (req, res) => {
+app.get('/department/:departmentId', ensureLogin, (req, res) => {
   dataService
     .getDepartmentById(req.params.departmentId)
     .then((value) => {
@@ -223,7 +247,7 @@ app.get('/department/:departmentId', (req, res) => {
     });
 });
 
-app.get('/departments/delete/:departmentId', (req, res) => {
+app.get('/departments/delete/:departmentId', ensureLogin, (req, res) => {
   dataService
     .deleteDepartmentById(req.params.departmentId)
     .then(res.redirect('/departments'))
@@ -235,7 +259,7 @@ app.get('/departments/delete/:departmentId', (req, res) => {
 });
 
 //// setup a 'route' to listen on /managers
-app.get('/managers', (req, res) => {
+app.get('/managers', ensureLogin, (req, res) => {
   dataService
     .getManagers()
     .then((data) => {
@@ -247,7 +271,7 @@ app.get('/managers', (req, res) => {
 });
 
 //// setup a 'route' to listen on /departments
-app.get('/departments', (req, res) => {
+app.get('/departments', ensureLogin, (req, res) => {
   dataService
     .getDepartments()
     .then((data) => {
@@ -258,21 +282,21 @@ app.get('/departments', (req, res) => {
     });
 });
 
-app.get('/departments/add', function (req, res) {
+app.get('/departments/add', ensureLogin, (req, res) => {
   res.render('addDepartment');
 });
 
-app.get('/images', (req, res) => {
+app.get('/images', ensureLogin, (req, res) => {
   fs.readdir('./public/images/uploaded', (err, items) => {
     res.render('images', { image: items });
   });
 });
 
-app.post('/images/add', upload.single('imageFile'), (req, res) => {
+app.post('/images/add', upload.single('imageFile'), ensureLogin, (req, res) => {
   res.redirect('/images');
 });
 
-app.post('/employees/add', (req, res) => {
+app.post('/employees/add', ensureLogin, (req, res) => {
   dataService
     .addEmployee(req.body)
     .then(res.redirect('/employees'))
@@ -283,7 +307,7 @@ app.post('/employees/add', (req, res) => {
     });
 });
 
-app.post('/employee/update', (req, res) => {
+app.post('/employee/update', ensureLogin, (req, res) => {
   dataService
     .updateEmployee(req.body)
     .then(res.redirect('/employees'))
@@ -294,7 +318,7 @@ app.post('/employee/update', (req, res) => {
     });
 });
 
-app.post('/departments/add', (req, res) => {
+app.post('/departments/add', ensureLogin, (req, res) => {
   dataService
     .addDepartment(req.body)
     .then(res.redirect('/departments'))
@@ -305,7 +329,7 @@ app.post('/departments/add', (req, res) => {
     });
 });
 
-app.post('/department/update', (req, res) => {
+app.post('/department/update', ensureLogin, (req, res) => {
   dataService
     .updateDepartment(req.body)
     .then(res.redirect('/departments'))
@@ -318,11 +342,11 @@ app.post('/department/update', (req, res) => {
 
 //////////////////////////////////////////////////////////////////////////////
 /////// Extra Feature: Middleware to add, update, and delete a manager ///////
-app.get('/managers/add', function (req, res) {
+app.get('/managers/add', ensureLogin, (req, res) => {
   res.render('addManager');
 });
 
-app.post('/managers/add', (req, res) => {
+app.post('/managers/add', ensureLogin, (req, res) => {
   dataService
     .addManager(req.body)
     .then(res.redirect('/managers'))
@@ -333,7 +357,7 @@ app.post('/managers/add', (req, res) => {
     });
 });
 
-app.post('/manager/update', (req, res) => {
+app.post('/manager/update', ensureLogin, (req, res) => {
   dataService
     .updateManager(req.body)
     .then(res.redirect('/managers'))
@@ -344,7 +368,7 @@ app.post('/manager/update', (req, res) => {
     });
 });
 
-app.get('/managers/delete/:empNum', (req, res) => {
+app.get('/managers/delete/:empNum', ensureLogin, (req, res) => {
   dataService
     .deleteManagerByNum(req.params.empNum)
     .then(() => res.redirect('/managers'))
@@ -361,7 +385,7 @@ app.get('/managers/delete/:empNum', (req, res) => {
 // app.use(function (req, res) {
 //   res.status(404).send('Page Not Found');
 // });
-//////// Modern way:
+//////// Better way:
 app.use(function (req, res) {
   res.sendFile(path.join(__dirname, '/views/404.html'));
 });
