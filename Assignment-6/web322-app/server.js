@@ -379,7 +379,55 @@ app.get('/managers/delete/:empNum', ensureLogin, (req, res) => {
     });
 });
 //////////////////////////////////////////////////////////////////////////////
+/////// Adding New Routes for /login, /logout, /register, /userHistory ///////
+app.get('/login', (req, res) => {
+  res.render('login');
+});
 
+app.get('/register', (req, res) => {
+  res.render('register');
+});
+
+app.get('/logout', (req, res) => {
+  req.session.reset();
+  res.redirect('/');
+});
+
+app.get('/userHistory', ensureLogin, (req, res) => {
+  res.render('userHistory');
+});
+
+app.post('/register', (req, res) => {
+  dataServiceAuth
+    .registerUser(req.body)
+    .then(() => {
+      res.render('register', { successMessage: 'User created' });
+    })
+    .catch((err) => {
+      res.render('register', {
+        errorMessage: err,
+        userName: req.body.userName,
+      });
+    });
+});
+
+app.post('/login', (req, res) => {
+  req.body.userAgent = req.get('User-Agent');
+  dataServiceAuth
+    .checkUser(req.body)
+    .then((user) => {
+      req.session.user = {
+        userName: user.userName, // authenticated user's userName
+        email: user.email, // authenticated user's email
+        loginHistory: user.loginHistory, // authenticated user's loginHistory
+      };
+      res.redirect('/employees');
+    })
+    .catch((err) => {
+      res.render('login', { errorMessage: err, userName: req.body.userName });
+    });
+});
+//////////////////////////////////////////////////////////////////////////////
 //// setup a 'route' for no matching route
 //////// Traditional way:
 // app.use(function (req, res) {
