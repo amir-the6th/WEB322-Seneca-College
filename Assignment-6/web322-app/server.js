@@ -369,7 +369,8 @@ app.use(function (req, res) {
 //// setup http server to listen on HTTP_PORT
 dataService
   .initialize()
-  .then(function () {
+  .then(dataServiceAuth.initialize)
+  .then(() => {
     app.listen(HTTP_PORT, onHTTPStart);
   })
   .catch(function (err) {
