@@ -42,13 +42,13 @@
                     {{#navLink "/"}}Home{{/navLink}}
                     {{#navLink "/about"}}About{{/navLink}}
                 </ul>
-                {{!-- <ul class="nav navbar-nav navbar-right navbar-custom">
+                {{#if session.user}}
+                <ul class="nav navbar-nav navbar-right navbar-custom">
                     <li><a href="/images">Images</a></li>
                     <li><a href="/employees">Employees</a></li>
                     <li><a href="/managers">Managers</a></li>
                     <li><a href="/departments">Departments</a></li>
-                </ul> --}}
-                {{#if session.user}}
+                </ul>
                 <form class="navbar-form navbar-right">
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="userMenu"
